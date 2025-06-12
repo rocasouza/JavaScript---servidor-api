@@ -49,6 +49,15 @@ async function ListForDriver(driver_user_id) {
 
 async function Accept(ride_id, driver_user_id) {
 
+    
+    // Validação: O motorista só pode aceitar uma carona por vez.
+    const dt = new Date().toISOString("pt-BR", {timeZone: "America/Sao_Paulo"}).slice(0, 10);
+    const searchRides = await List(null, dt, null, driver_user_id, "A", null);
+
+    if (searchRides.length > 0)
+        throw "O motorista só pode aceitar uma carona por vez. Você já possui uma carona no dia de hoje para: " + searchRides[0].passenger_name + ".";
+    //--------------------
+
     const ride = await repositoryRide.Accept(ride_id, driver_user_id);
 
     return ride;
